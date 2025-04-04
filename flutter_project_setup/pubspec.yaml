@@ -1,5 +1,5 @@
 name: flutter_project_setup
-description: A sample command-line application.
+description: "Una CLI per generare progetti Flutter con architettura selezionata."
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
@@ -18,4 +18,4 @@ dev_dependencies:
   test: ^1.24.0
 
 executables:
-  flutter_project_setup:
+  flutter_project_setup: flutter_project_setup
