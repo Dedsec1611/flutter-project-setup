@@ -77,10 +77,10 @@ Future<void> main(List<String> arguments) async {
 
   //Generazione del progetto
   if (repoInit == 'Y') {
-    ProjectGenerator.createFlutterProject(projectName, architecture);
+    await ProjectGenerator.createFlutterProject(projectName, architecture);
   } else {
     print('Genero un nuovo progetto');
-    ProjectGenerator.createProjectStructure(projectName, architecture);
+   await ProjectGenerator.createProjectStructure(projectName, architecture);
   }
 
   if(gitIgnore =='Y'){
@@ -112,6 +112,6 @@ Future<void> main(List<String> arguments) async {
   }
 
   if(selectedDependencies != null && selectedDependencies.isNotEmpty){
-    DependencyManager.addDependenciesInteractively(selectedDependencies);
+    await DependencyManager.addDependenciesInteractively(selectedDependencies, projectName);
   }
 }

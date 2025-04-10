@@ -78,16 +78,16 @@ class ProjectGenerator {
     
   }
 
- static void createFlutterProject(String projectName, String architecture) {
+ static Future createFlutterProject(String projectName, String architecture) async {
   switch (architecture) {
     case 'mvc':
-      cloneRepo('flutter_mvc', projectName,architecture);
+     await cloneRepo('flutter_mvc', projectName,architecture);
       break;
     case 'mvvc':
-      cloneRepo('flutter_mvvc', projectName,architecture);
+      await cloneRepo('flutter_mvvc', projectName,architecture);
       break;
     case 'clean':
-      cloneRepo('flutter_clean_arch', projectName,architecture);
+      await cloneRepo('flutter_clean_arch', projectName,architecture);
       break;
   }
 }

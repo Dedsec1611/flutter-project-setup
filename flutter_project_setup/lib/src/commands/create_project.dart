@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_project_setup/src/utils/console_utils.dart';
 
-void cloneRepo(String branch, String projectName, String architecture) async{
+Future cloneRepo(String branch, String projectName, String architecture) async{
   String currentDirectory = Directory.current.path;
   // Percorso dove verrà creato il progetto
   String projectPath = '$currentDirectory/$projectName';

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
+import 'package:yaml_edit/yaml_edit.dart';
 
 class DependencyManager {
   static Future<List?> selectDependencies() async {
@@ -15,6 +17,8 @@ class DependencyManager {
       'go_router',
       'hive',
       'path_provider',
+      'geolocator',
+      'permission_handler'
     ];
 
     print('\n📦 Seleziona le librerie da installare (separa con virgola):');
@@ -34,36 +38,54 @@ class DependencyManager {
     return selected;
   }
 
-  static Future<void> addDependenciesInteractively(List selected) async{
-      final pubspec = File('pubspec.yaml');
+  static Future<void> addDependenciesInteractively(
+      List selected, String projectName) async {
+    final String projectPath = path.join(Directory.current.path, projectName);
+    final pubspec = File(path.join(projectPath, 'pubspec.yaml'));
+
     if (!pubspec.existsSync()) {
-      print('❌ File pubspec.yaml non trovato.');
+      print(
+          '❌ File pubspec.yaml non trovato in: ${path.join(projectPath, 'pubspec.yaml')}');
       return;
     }
 
-    final sink = pubspec.openWrite(mode: FileMode.append);
+    final originalYaml = await pubspec.readAsString();
+    final yamlEditor = YamlEditor(originalYaml);
 
     for (final lib in selected) {
       final version = await _getLatestVersion(lib);
       if (version != null) {
-        sink.writeln('$lib: ^$version');
-        print('✅ Aggiunto $lib:^$version');
+        try {
+          yamlEditor.update(['dependencies', lib], '^$version');
+          print('✅ Aggiunto $lib: ^$version');
+        } catch (e) {
+          print('⚠️ Errore durante l\'aggiunta di $lib: $e');
+        }
       } else {
-        print('⚠️  Impossibile trovare la versione di $lib');
+        print('⚠️ Impossibile trovare la versione di $lib');
       }
     }
 
-    await sink.flush();
-    await sink.close();
+    var resultScript = await pubspec.writeAsString(yamlEditor.toString());
+    print('🔍 Result write: ${resultScript}');
 
+    // Esegui pub get nella directory corretta
     print('\n📦 Eseguo `dart pub get`...\n');
-    final result = await Process.run('dart', ['pub', 'get']);
+    print('🔍 Current dir: ${Directory.current.path}');
+    print('📁 Project path: $projectPath');
+    final result = await Process.run(
+      'dart',
+      ['pub', 'get'],
+      workingDirectory: projectPath,
+    );
     stdout.write(result.stdout);
     stderr.write(result.stderr);
   }
+
   static Future<String?> _getLatestVersion(String package) async {
     try {
-      final res = await http.get(Uri.parse('https://pub.dev/api/packages/$package'));
+      final res =
+          await http.get(Uri.parse('https://pub.dev/api/packages/$package'));
       if (res.statusCode == 200) {
         final data = json.decode(res.body);
         return data['latest']['version'];
