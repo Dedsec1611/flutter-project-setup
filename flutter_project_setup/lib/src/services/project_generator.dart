@@ -66,17 +66,6 @@ class ProjectGenerator {
     await Directory('${libDir.path}/features/example/presentation').create(recursive: true);
   }
 
-  static Future<void> _createDirs(Directory baseDir, List<String> paths) async {
-    for (final path in paths) {
-      final dir = Directory('${baseDir.path}/$path');
-      if (!await dir.exists()) {
-        await dir.create(recursive: true);
-        print('✅ Creata cartella: ${dir.path}');
-      }
-    }
-
-    
-  }
 
  static Future createFlutterProject(String projectName, String architecture) async {
   switch (architecture) {
@@ -236,7 +225,7 @@ Future<void> createModelFile(String filePath, String classCode) async {
 // Estensione per capitalizzare la prima lettera di una stringa
 extension StringCapitalization on String {
   String capitalize() {
-    return this[0].toUpperCase() + this.substring(1);
+    return this[0].toUpperCase() + substring(1);
   }
 }
 

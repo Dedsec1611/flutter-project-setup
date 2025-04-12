@@ -67,7 +67,7 @@ class DependencyManager {
     }
 
     var resultScript = await pubspec.writeAsString(yamlEditor.toString());
-    print('🔍 Result write: ${resultScript}');
+    print('🔍 Result write: $resultScript');
     print('📁 Project path: $projectPath');
     print('📂 Contenuto della directory:');
     Directory(projectPath).listSync().forEach((f) => print(' - ${f.path}'));

@@ -3,11 +3,8 @@ import 'dart:io';
 import 'package:flutter_project_setup/src/commands/add_dependencies.dart';
 import 'package:flutter_project_setup/src/services/project_generator.dart';
 import 'package:flutter_project_setup/src/utils/git_utils.dart';
-import 'package:path/path.dart' as path;
 import 'package:args/args.dart';
 import 'package:dart_console/dart_console.dart';
-import 'package:flutter_project_setup/flutter_project_setup.dart'
-    as flutter_project_setup;
 import 'package:flutter_project_setup/src/utils/console_utils.dart';
 
 Future<void> main(List<String> arguments) async {
