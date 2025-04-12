@@ -12,8 +12,7 @@ import 'package:flutter_project_setup/src/utils/console_utils.dart';
 
 Future<void> main(List<String> arguments) async {
   List<String> architectures = ['mvc', 'mvvm', 'clean'];
-  print(ConsoleUtils.getName());
-  print("Version 1.0");
+  print("${ConsoleUtils.getName()} -  Version 1.0\n");
   final parser = ArgParser()
     ..addOption('name', abbr: 'n', help: 'Nome del progetto Flutter')
     ..addOption(
@@ -65,16 +64,6 @@ Future<void> main(List<String> arguments) async {
   }
 
   print('$projectName - $architecture');
-
-  // Aggiungi un ciclo per l'input
-  while (true) {
-    String? exitCommand = ConsoleUtils.inputConsole(
-        question: "Digita 'q' per uscire, altrimenti continua con il processo: ");
-    
-    if (exitCommand?.toLowerCase() == 'q') {
-      print("Uscita in corso...");
-      break; // Esci dal ciclo e termina il programma
-    }
 
     // Prima chiedi se importare un modello JSON
     String? generateModel = ConsoleUtils.inputConsole(
@@ -132,13 +121,4 @@ Future<void> main(List<String> arguments) async {
       await DependencyManager.addDependenciesInteractively(selectedDependencies, projectName);
     }
 
-    // Esci se l'utente decide di non proseguire ulteriormente
-    exitCommand = ConsoleUtils.inputConsole(
-        question: "Vuoi continuare? Digita 'q' per uscire o qualsiasi tasto per continuare: ");
-    
-    if (exitCommand?.toLowerCase() == 'q') {
-      print("Uscita in corso...");
-      break; // Esci dal ciclo e termina il programma
-    }
-  }
 }
