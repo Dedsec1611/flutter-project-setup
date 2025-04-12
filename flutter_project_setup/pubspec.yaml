@@ -1,6 +1,6 @@
 name: flutter_project_setup
 description: "Una CLI per generare progetti Flutter con architettura selezionata."
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/Dedsec1611/flutter-project-setup.git
 
 environment:

@@ -62,60 +62,60 @@ Future<void> main(List<String> arguments) async {
 
   print('$projectName - $architecture');
 
-    // Prima chiedi se importare un modello JSON
-    String? generateModel = ConsoleUtils.inputConsole(
-        question: "Vuoi importare un json per la creazione del modello? (Y/n)");
+  // Prima chiedi se importare un modello JSON
+  String? generateModel = ConsoleUtils.inputConsole(
+      question: "Vuoi importare un json per la creazione del modello? (Y/n)");
 
-    dynamic jsonData;
+  dynamic jsonData;
 
-    if (generateModel == 'Y') {
-      print('Inserisci il percorso del file JSON:');
-      String? jsonFilePath = stdin.readLineSync();
-      if (jsonFilePath == null || jsonFilePath.isEmpty) {
-        print('Percorso file non valido.');
-        return;
-      }
-      // Verifica se il file esiste
-      File jsonFile = File(jsonFilePath);
-      if (!jsonFile.existsSync()) {
-        print('Il file $jsonFilePath non esiste.');
-        return;
-      }
-
-      // Carica e analizza il file JSON
-      String jsonString = await jsonFile.readAsString();
-      jsonData = jsonDecode(jsonString);
+  if (generateModel == 'Y') {
+    print('Inserisci il percorso del file JSON:');
+    String? jsonFilePath = stdin.readLineSync();
+    if (jsonFilePath == null || jsonFilePath.isEmpty) {
+      print('Percorso file non valido.');
+      return;
+    }
+    // Verifica se il file esiste
+    File jsonFile = File(jsonFilePath);
+    if (!jsonFile.existsSync()) {
+      print('Il file $jsonFilePath non esiste.');
+      return;
     }
 
-    // Poi chiedi se inizializzare una repository Git
-    String? repoInit = ConsoleUtils.inputConsole(
-        question: 'Vuoi partire da una repository git? (Y/n): ');
+    // Carica e analizza il file JSON
+    String jsonString = await jsonFile.readAsString();
+    jsonData = jsonDecode(jsonString);
+  }
 
-    // Poi chiedi se inizializzare il .gitignore
-    String? gitIgnore = ConsoleUtils.inputConsole(
-        question: "Vuoi inizializzare .gitignore? (Y/n)");
+  // Poi chiedi se inizializzare una repository Git
+  String? repoInit = ConsoleUtils.inputConsole(
+      question: 'Vuoi partire da una repository git? (Y/n): ');
 
-    List? selectedDependencies = await DependencyManager.selectDependencies();
+  // Poi chiedi se inizializzare il .gitignore
+  String? gitIgnore = ConsoleUtils.inputConsole(
+      question: "Vuoi inizializzare .gitignore? (Y/n)");
 
-    //Generazione del progetto
-    if (repoInit == 'Y') {
-      await ProjectGenerator.createFlutterProject(projectName, architecture);
-    } else {
-      print('Genero un nuovo progetto');
-      await ProjectGenerator.createProjectStructure(projectName, architecture);
-    }
+  List? selectedDependencies = await DependencyManager.selectDependencies();
 
-    if (gitIgnore == 'Y') {
-      GitUtils.copyGitignoreToProject(projectName);
-    }
+  //Generazione del progetto
+  if (repoInit == 'Y') {
+    await ProjectGenerator.createFlutterProject(projectName, architecture);
+  } else {
+    print('Genero un nuovo progetto');
+    await ProjectGenerator.createProjectStructure(projectName, architecture);
+  }
 
-    if (generateModel == 'Y') {
-      // Genera le entità basate sul JSON
-      await generateModels(jsonData, architecture, projectName);
-    }
+  if (gitIgnore == 'Y') {
+    GitUtils.copyGitignoreToProject(projectName);
+  }
 
-    if (selectedDependencies != null && selectedDependencies.isNotEmpty) {
-      await DependencyManager.addDependenciesInteractively(selectedDependencies, projectName);
-    }
+  if (generateModel == 'Y') {
+    // Genera le entità basate sul JSON
+    await generateModels(jsonData, architecture, projectName);
+  }
 
+  if (selectedDependencies != null && selectedDependencies.isNotEmpty) {
+    await DependencyManager.addDependenciesInteractively(
+        selectedDependencies, projectName);
+  }
 }

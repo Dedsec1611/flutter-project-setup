@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_project_setup/src/utils/console_utils.dart';
 
-Future cloneRepo(String branch, String projectName, String architecture) async{
+Future cloneRepo(String branch, String projectName, String architecture) async {
   String currentDirectory = Directory.current.path;
   // Percorso dove verrà creato il progetto
   String projectPath = '$currentDirectory/$projectName';
@@ -26,10 +26,12 @@ Future cloneRepo(String branch, String projectName, String architecture) async{
     }
 
     //CHIEDIAMO SE INIZIALIZZARE GIT
-    String? gitInitOption = ConsoleUtils.inputConsole(question: 'Vuoi inizializzare un nuovo repository Git? (Y/n): ');
+    String? gitInitOption = ConsoleUtils.inputConsole(
+        question: 'Vuoi inizializzare un nuovo repository Git? (Y/n): ');
 
     if (gitInitOption == 'Y') {
-      ProcessResult gitInitResult = await Process.run('git', ['init'], workingDirectory: projectPath);
+      ProcessResult gitInitResult =
+          await Process.run('git', ['init'], workingDirectory: projectPath);
       if (gitInitResult.exitCode == 0) {
         print('Repository Git inizializzato con successo!');
       } else {

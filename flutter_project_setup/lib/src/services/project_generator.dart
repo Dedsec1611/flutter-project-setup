@@ -4,7 +4,8 @@ import 'package:path/path.dart' as path;
 import 'package:flutter_project_setup/src/commands/create_project.dart';
 
 class ProjectGenerator {
-   static Future<void> createProjectStructure(String projectName, String architecture) async {
+  static Future<void> createProjectStructure(
+      String projectName, String architecture) async {
     final currentDir = Directory.current;
     final projectDir = Directory('${currentDir.path}/$projectName');
 
@@ -61,34 +62,36 @@ class ProjectGenerator {
     final libDir = Directory('${baseDir.path}/lib');
     await Directory('${libDir.path}/core').create(recursive: true);
     await Directory('${libDir.path}/features').create(recursive: true);
-    await Directory('${libDir.path}/features/example/data').create(recursive: true);
-    await Directory('${libDir.path}/features/example/domain').create(recursive: true);
-    await Directory('${libDir.path}/features/example/presentation').create(recursive: true);
+    await Directory('${libDir.path}/features/example/data')
+        .create(recursive: true);
+    await Directory('${libDir.path}/features/example/domain')
+        .create(recursive: true);
+    await Directory('${libDir.path}/features/example/presentation')
+        .create(recursive: true);
   }
 
+  static Future createFlutterProject(
+      String projectName, String architecture) async {
+    switch (architecture) {
+      case 'mvc':
+        await cloneRepo('flutter_mvc', projectName, architecture);
+        break;
+      case 'mvvc':
+        await cloneRepo('flutter_mvvc', projectName, architecture);
+        break;
+      case 'clean':
+        await cloneRepo('flutter_clean_arch', projectName, architecture);
+        break;
+    }
+  }
+}
 
- static Future createFlutterProject(String projectName, String architecture) async {
+String getPathModels(String architecture) {
   switch (architecture) {
-    case 'mvc':
-     await cloneRepo('flutter_mvc', projectName,architecture);
-      break;
-    case 'mvvc':
-      await cloneRepo('flutter_mvvc', projectName,architecture);
-      break;
-    case 'clean':
-      await cloneRepo('flutter_clean_arch', projectName,architecture);
-      break;
-  }
-}
-
-}
-
-String getPathModels(String architecture){
-switch (architecture) {
     case 'mvc':
       return "lib/models";
     case 'mvvc':
-     return "lib/models";
+      return "lib/models";
     case 'clean':
       return "lib/data/models";
   }
@@ -96,8 +99,9 @@ switch (architecture) {
 }
 
 // Funzione ricorsiva per generare modelli Dart a partire da un JSON
-Future<void> generateModels(dynamic jsonData, String architecture, String projectName) async {
-   String currentDirectory = Directory.current.path;
+Future<void> generateModels(
+    dynamic jsonData, String architecture, String projectName) async {
+  String currentDirectory = Directory.current.path;
   String projectPath = '$currentDirectory/$projectName';
   if (jsonData is Map<String, dynamic>) {
     // Caso: Oggetto JSON (Map)
@@ -106,11 +110,12 @@ Future<void> generateModels(dynamic jsonData, String architecture, String projec
         // Se il valore è un oggetto o una lista, generiamo un modello
         String modelName = key.capitalize();
         String classCode = generateDartClass(value, modelName);
-        
+
         // Salva la classe in un file separato
-        String filePath = path.join(projectPath, getPathModels(architecture), '$modelName.dart');
+        String filePath = path.join(
+            projectPath, getPathModels(architecture), '$modelName.dart');
         await createModelFile(filePath, classCode);
-        
+
         print('File generato per la classe $modelName in $filePath');
 
         // Se il valore è un oggetto o una lista, chiamare ricorsivamente
@@ -121,9 +126,10 @@ Future<void> generateModels(dynamic jsonData, String architecture, String projec
     // Caso: Lista
     String modelName = 'ListModel';
     String listClassCode = generateListModel(jsonData, modelName);
-    
+
     // Salva la lista in un file separato
-    String filePath = path.join(projectPath, getPathModels(architecture), '$modelName.dart');
+    String filePath =
+        path.join(projectPath, getPathModels(architecture), '$modelName.dart');
     await createModelFile(filePath, listClassCode);
 
     print('File generato per la lista in $filePath');
@@ -150,7 +156,8 @@ String generateDartClass(Map<String, dynamic> jsonData, String className) {
   classCode.writeln('  });\n');
 
   // fromJson e toJson
-  classCode.writeln('  factory $className.fromJson(Map<String, dynamic> json) {');
+  classCode
+      .writeln('  factory $className.fromJson(Map<String, dynamic> json) {');
   classCode.writeln('    return $className(');
   jsonData.forEach((key, value) {
     classCode.writeln('      $key: json[\'$key\'],');
@@ -185,7 +192,8 @@ String generateListModel(List<dynamic> jsonData, String className) {
 
   // fromJson e toJson
   classCode.writeln('  factory $className.fromJson(List<dynamic> json) {');
-  classCode.writeln('    return $className(items: json.map((item) => item).toList());');
+  classCode.writeln(
+      '    return $className(items: json.map((item) => item).toList());');
   classCode.writeln('  }\n');
 
   classCode.writeln('  List<dynamic> toJson() {');
@@ -228,4 +236,3 @@ extension StringCapitalization on String {
     return this[0].toUpperCase() + substring(1);
   }
 }
-
