@@ -68,7 +68,9 @@ class DependencyManager {
 
     var resultScript = await pubspec.writeAsString(yamlEditor.toString());
     print('🔍 Result write: ${resultScript}');
-
+    print('📁 Project path: $projectPath');
+    print('📂 Contenuto della directory:');
+    Directory(projectPath).listSync().forEach((f) => print(' - ${f.path}'));
     // Esegui pub get nella directory corretta
     print('\n📦 Eseguo `dart pub get`...\n');
     print('🔍 Current dir: ${Directory.current.path}');

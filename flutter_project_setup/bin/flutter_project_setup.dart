@@ -13,6 +13,7 @@ import 'package:flutter_project_setup/src/utils/console_utils.dart';
 Future<void> main(List<String> arguments) async {
   List<String> architectures = ['mvc', 'mvvm', 'clean'];
   print(ConsoleUtils.getName());
+  print("Version 1.0");
   final parser = ArgParser()
     ..addOption('name', abbr: 'n', help: 'Nome del progetto Flutter')
     ..addOption(
@@ -30,6 +31,7 @@ Future<void> main(List<String> arguments) async {
     print(parser.usage);
     return;
   }
+
   // Project name
   var projectName = argResults['name'] as String?;
   projectName ??= ConsoleUtils.inputConsole(
@@ -64,54 +66,79 @@ Future<void> main(List<String> arguments) async {
 
   print('$projectName - $architecture');
 
-  String? repoInit = ConsoleUtils.inputConsole(
-      question: 'Vuoi partire da una repository git? (Y/n): ');
-  String? gitIgnore = ConsoleUtils.inputConsole(question: "Vuoi inizializzare .gitignore? (Y/n)");
-
-  String? generateModel = ConsoleUtils.inputConsole(
-      question: "Vuoi importare un json per la creazione del modello? (Y/n)");
-
-  List? selectedDependencies = await DependencyManager.selectDependencies();
-
-
-
-  //Generazione del progetto
-  if (repoInit == 'Y') {
-    await ProjectGenerator.createFlutterProject(projectName, architecture);
-  } else {
-    print('Genero un nuovo progetto');
-   await ProjectGenerator.createProjectStructure(projectName, architecture);
-  }
-
-  if(gitIgnore =='Y'){
-    // TODO
-    GitUtils.copyGitignoreToProject(projectName);
-  }
-
-  if (generateModel == 'Y') {
-    print('Inserisci il percorso del file JSON:');
-    String? jsonFilePath = stdin.readLineSync();
-
-    if (jsonFilePath == null || jsonFilePath.isEmpty) {
-      print('Percorso file non valido.');
-      return;
-    }
-    // Verifica se il file esiste
-    File jsonFile = File(jsonFilePath);
-    if (!jsonFile.existsSync()) {
-      print('Il file $jsonFilePath non esiste.');
-      return;
+  // Aggiungi un ciclo per l'input
+  while (true) {
+    String? exitCommand = ConsoleUtils.inputConsole(
+        question: "Digita 'q' per uscire, altrimenti continua con il processo: ");
+    
+    if (exitCommand?.toLowerCase() == 'q') {
+      print("Uscita in corso...");
+      break; // Esci dal ciclo e termina il programma
     }
 
-    // Carica e analizza il file JSON
-    String jsonString = await jsonFile.readAsString();
-    dynamic jsonData = jsonDecode(jsonString);
+    // Prima chiedi se importare un modello JSON
+    String? generateModel = ConsoleUtils.inputConsole(
+        question: "Vuoi importare un json per la creazione del modello? (Y/n)");
 
-    // Genera le entità basate sul JSON
-    await generateModels(jsonData, architecture, projectName);
-  }
+    dynamic jsonData;
 
-  if(selectedDependencies != null && selectedDependencies.isNotEmpty){
-    await DependencyManager.addDependenciesInteractively(selectedDependencies, projectName);
+    if (generateModel == 'Y') {
+      print('Inserisci il percorso del file JSON:');
+      String? jsonFilePath = stdin.readLineSync();
+      if (jsonFilePath == null || jsonFilePath.isEmpty) {
+        print('Percorso file non valido.');
+        return;
+      }
+      // Verifica se il file esiste
+      File jsonFile = File(jsonFilePath);
+      if (!jsonFile.existsSync()) {
+        print('Il file $jsonFilePath non esiste.');
+        return;
+      }
+
+      // Carica e analizza il file JSON
+      String jsonString = await jsonFile.readAsString();
+      jsonData = jsonDecode(jsonString);
+    }
+
+    // Poi chiedi se inizializzare una repository Git
+    String? repoInit = ConsoleUtils.inputConsole(
+        question: 'Vuoi partire da una repository git? (Y/n): ');
+
+    // Poi chiedi se inizializzare il .gitignore
+    String? gitIgnore = ConsoleUtils.inputConsole(
+        question: "Vuoi inizializzare .gitignore? (Y/n)");
+
+    List? selectedDependencies = await DependencyManager.selectDependencies();
+
+    //Generazione del progetto
+    if (repoInit == 'Y') {
+      await ProjectGenerator.createFlutterProject(projectName, architecture);
+    } else {
+      print('Genero un nuovo progetto');
+      await ProjectGenerator.createProjectStructure(projectName, architecture);
+    }
+
+    if (gitIgnore == 'Y') {
+      GitUtils.copyGitignoreToProject(projectName);
+    }
+
+    if (generateModel == 'Y') {
+      // Genera le entità basate sul JSON
+      await generateModels(jsonData, architecture, projectName);
+    }
+
+    if (selectedDependencies != null && selectedDependencies.isNotEmpty) {
+      await DependencyManager.addDependenciesInteractively(selectedDependencies, projectName);
+    }
+
+    // Esci se l'utente decide di non proseguire ulteriormente
+    exitCommand = ConsoleUtils.inputConsole(
+        question: "Vuoi continuare? Digita 'q' per uscire o qualsiasi tasto per continuare: ");
+    
+    if (exitCommand?.toLowerCase() == 'q') {
+      print("Uscita in corso...");
+      break; // Esci dal ciclo e termina il programma
+    }
   }
 }
